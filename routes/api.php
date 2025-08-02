@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProgramKeahlianController;
 use App\Http\Controllers\Public\HeroSlidePublicController;
+use App\Http\Controllers\BeritaController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -30,6 +31,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/program-keahlian/{id}', [ProgramKeahlianController::class, 'show']);
     Route::put('/program-keahlian/{id}', [ProgramKeahlianController::class, 'update']);
     Route::delete('/program-keahlian/{id}', [ProgramKeahlianController::class, 'destroy']);
+
+    // == TAMBAHKAN ROUTE DI BAWAH INI ==
+    Route::get('/berita', [BeritaController::class, 'index']);
+    Route::post('/berita', [BeritaController::class, 'store']);
+    Route::get('/berita/{id}', [BeritaController::class, 'show']);
+    Route::post('/berita/{id}', [BeritaController::class, 'update']); // Gunakan POST untuk update karena form data
+    Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
 });
 
 // Admin
@@ -45,6 +53,9 @@ Route::prefix('public')->group(function () {
     Route::get('/program-keahlian', [ProgramKeahlianController::class, 'publik']);
     Route::get('/hero-slides', [HeroSlidePublicController::class, 'index']);
     // Route publik lainnya
+
+    // == TAMBAHKAN ROUTE PUBLIK DI BAWAH INI ==
+    Route::get('/berita', [BeritaController::class, 'publik']);
 });
 
 
