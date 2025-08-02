@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProgramKeahlianController;
 use App\Http\Controllers\Public\HeroSlidePublicController;
 use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\FileUploadController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -38,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/berita/{id}', [BeritaController::class, 'show']);
     Route::post('/berita/{id}', [BeritaController::class, 'update']); // Gunakan POST untuk update karena form data
     Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
+
+    Route::post('/upload-image', [FileUploadController::class, 'store']);
 });
 
 // Admin
