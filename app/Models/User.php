@@ -57,4 +57,12 @@ class User extends Authenticatable
             $model->id = (string) Str::uuid();
         });
     }
+
+    /**
+     * Seorang User bisa memiliki banyak Berita.
+     */
+    public function beritas()
+    {
+        return $this->hasMany(Berita::class, 'user_id');
+    }
 }

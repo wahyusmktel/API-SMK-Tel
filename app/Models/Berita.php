@@ -23,6 +23,8 @@ class Berita extends Model
         'meta_judul',
         'meta_deskripsi',
         'tags',
+        'kategori_berita_id',
+        'user_id',
     ];
 
     // Otomatis membuat UUID saat data baru dibuat
@@ -31,5 +33,16 @@ class Berita extends Model
         static::creating(function ($model) {
             $model->id = (string) Str::uuid();
         });
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriBerita::class, 'kategori_berita_id');
+    }
+
+    public function author()
+    {
+        // 'author' adalah nama relasi, 'user_id' adalah foreign key
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

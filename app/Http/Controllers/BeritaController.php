@@ -5,16 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Berita;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class BeritaController extends Controller
 {
-    // Mengambil semua berita (untuk admin)
+    /**
+     * Mengambil semua berita, termasuk data kategorinya.
+     */
     public function index()
     {
-        return response()->json(Berita::orderBy('created_at', 'desc')->get());
+        // Menggunakan with('kategori') untuk mengambil data relasi
+        return response()->json(Berita::with(['kategori', 'author'])->orderBy('created_at', 'desc')->get());
     }
 
-    // Menyimpan berita baru
+    /**
+     * Menyimpan berita baru.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -25,23 +31,31 @@ class BeritaController extends Controller
             'meta_judul' => 'nullable|string|max:255',
             'meta_deskripsi' => 'nullable|string|max:160',
             'tags' => 'nullable|string',
+            // Menambahkan validasi untuk kategori
+            'kategori_berita_id' => 'nullable|exists:kategori_beritas,id',
         ]);
 
-        // Membuat slug unik dari judul
+        $validated['user_id'] = Auth::id();
         $validated['slug'] = Str::slug($validated['judul']) . '-' . uniqid();
 
         $berita = Berita::create($validated);
+        // Memuat relasi kategori setelah dibuat
+        $berita->load('kategori', 'author');
         return response()->json($berita, 201);
     }
 
-    // Menampilkan satu berita
+    /**
+     * Menampilkan satu berita.
+     */
     public function show($id)
     {
-        $berita = Berita::findOrFail($id);
+        $berita = Berita::with('kategori', 'author')->findOrFail($id);
         return response()->json($berita);
     }
 
-    // Memperbarui berita
+    /**
+     * Memperbarui berita.
+     */
     public function update(Request $request, $id)
     {
         $berita = Berita::findOrFail($id);
@@ -54,18 +68,22 @@ class BeritaController extends Controller
             'meta_judul' => 'nullable|string|max:255',
             'meta_deskripsi' => 'nullable|string|max:160',
             'tags' => 'nullable|string',
+            // Menambahkan validasi untuk kategori
+            'kategori_berita_id' => 'nullable|exists:kategori_beritas,id',
         ]);
 
-        // Jika judul diubah, buat slug baru
-        if ($request->has('judul')) {
+        if ($request->has('judul') && $berita->judul !== $request->judul) {
             $validated['slug'] = Str::slug($validated['judul']) . '-' . $berita->id;
         }
 
         $berita->update($validated);
+        $berita->load('kategori', 'author');
         return response()->json($berita);
     }
 
-    // Menghapus berita
+    /**
+     * Menghapus berita.
+     */
     public function destroy($id)
     {
         $berita = Berita::findOrFail($id);
@@ -74,11 +92,13 @@ class BeritaController extends Controller
         return response()->json(['message' => 'Berita berhasil dihapus']);
     }
 
-    // Endpoint untuk publik (hanya menampilkan berita yang published)
+    /**
+     * Endpoint untuk publik.
+     */
     public function publik()
     {
         return response()->json(
-            Berita::where('status', 'published')->orderBy('created_at', 'desc')->get()
+            Berita::with('kategori', 'author')->where('status', 'published')->orderBy('created_at', 'desc')->get()
         );
     }
 }
