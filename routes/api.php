@@ -66,6 +66,8 @@ Route::prefix('public')->group(function () {
 
     // == TAMBAHKAN ROUTE PUBLIK DI BAWAH INI ==
     Route::get('/berita', [BeritaController::class, 'publik']);
+
+    Route::get('/berita/{slug}', [BeritaController::class, 'showBySlug']);
 });
 
 

@@ -93,6 +93,19 @@ class BeritaController extends Controller
     }
 
     /**
+     * Menampilkan satu berita spesifik untuk publik berdasarkan slug.
+     */
+    public function showBySlug($slug)
+    {
+        $berita = Berita::with(['kategori', 'author'])
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->firstOrFail(); // Akan error 404 jika tidak ditemukan
+
+        return response()->json($berita);
+    }
+
+    /**
      * Endpoint untuk publik.
      */
     public function publik()
