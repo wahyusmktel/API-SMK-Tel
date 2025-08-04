@@ -45,4 +45,12 @@ class Berita extends Model
         // 'author' adalah nama relasi, 'user_id' adalah foreign key
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /**
+     * Mendefinisikan relasi: satu Berita 'memiliki banyak' Komentar.
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

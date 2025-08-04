@@ -12,6 +12,7 @@ use App\Http\Controllers\Public\HeroSlidePublicController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\KategoriBeritaController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -69,6 +70,10 @@ Route::prefix('public')->group(function () {
 
     Route::get('/berita/{slug}', [BeritaController::class, 'showBySlug']);
     Route::get('/berita/{slug}/related', [BeritaController::class, 'getRelated']);
+
+    Route::get('/berita/{berita_id}/comments', [CommentController::class, 'index']);
+    Route::post('/berita/{berita_id}/comments', [CommentController::class, 'store']);
+    Route::post('/comments/{comment_id}/like', [CommentController::class, 'like']);
 });
 
 
