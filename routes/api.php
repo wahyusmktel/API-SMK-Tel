@@ -68,6 +68,7 @@ Route::prefix('public')->group(function () {
     Route::get('/berita', [BeritaController::class, 'publik']);
 
     Route::get('/berita/{slug}', [BeritaController::class, 'showBySlug']);
+    Route::get('/berita/{slug}/related', [BeritaController::class, 'getRelated']);
 });
 
 

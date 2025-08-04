@@ -114,4 +114,32 @@ class BeritaController extends Controller
             Berita::with('kategori', 'author')->where('status', 'published')->orderBy('created_at', 'desc')->get()
         );
     }
+
+    /**
+     * Mengambil artikel terkait berdasarkan kategori yang sama.
+     *
+     * @param string $slug
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRelated($slug)
+    {
+        // 1. Temukan artikel asli untuk mendapatkan ID dan kategori ID-nya
+        $originalArticle = Berita::where('slug', $slug)->first();
+
+        // Jika artikel asli tidak ditemukan atau tidak punya kategori, kembalikan array kosong
+        if (!$originalArticle || !$originalArticle->kategori_berita_id) {
+            return response()->json([]);
+        }
+
+        // 2. Cari artikel lain dalam kategori yang sama
+        $relatedArticles = Berita::with(['kategori', 'author'])
+            ->where('kategori_berita_id', $originalArticle->kategori_berita_id) // Kategori harus sama
+            ->where('id', '!=', $originalArticle->id) // Jangan sertakan artikel itu sendiri
+            ->where('status', 'published') // Hanya yang sudah dipublikasi
+            ->orderBy('created_at', 'desc') // Urutkan dari yang terbaru
+            ->limit(3) // Batasi hanya 3 artikel
+            ->get();
+
+        return response()->json($relatedArticles);
+    }
 }
